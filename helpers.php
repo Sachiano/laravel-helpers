@@ -82,10 +82,10 @@ function selected($element, $attribute, $type, $checkAgainst = null)
  *
  * @return int      The timestamp
  */
-function get_dir_mtime($path = '', $regex = null)
+function dirmtime($path = '', $regex = null)
 {
     $directory = new RecursiveDirectoryIterator($path);
-    $iterator = new RecursiveIteratorIterator($directory);
+    $iterator  = new RecursiveIteratorIterator($directory);
 
     if ($regex) {
         $iterator = new RegexIterator($iterator, $regex, RecursiveRegexIterator::GET_MATCH);
@@ -94,6 +94,14 @@ function get_dir_mtime($path = '', $regex = null)
     $mtimes = [];
 
     foreach ($iterator as $file) {
+        if (is_array($file)) {
+            foreach ($file as $f) {
+                $mtimes[] = filemtime($f);
+            }
+
+            continue;
+        }
+
         $mtimes[] = filemtime($file);
     }
 
